@@ -1,0 +1,19 @@
+{
+  "name": "bahlil-arcade",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Hub game web satir bertema Bahlil + MBG. Game #1: Tangkap MBG.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host"
+  },
+  "dependencies": {
+    "phaser": "^3.80.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "vite": "^5.4.2"
+  }
+}

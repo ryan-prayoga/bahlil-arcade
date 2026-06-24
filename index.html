@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#1c1510" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anton&family=Plus+Jakarta+Sans:wght@500;700;800&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>Bahlil Arcade — Mini Game Satir</title>
+    <meta
+      name="description"
+      content="Kumpulan mini game web satir bertema Bahlil & MBG. Konten parodi."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Bahlil Arcade" />
+    <meta property="og:title" content="Bahlil Arcade — Tangkap MBG" />
+    <meta
+      property="og:description"
+      content="Sambut yang bergizi, tampik yang basi. Mini game satir, main 1 jari. Konten parodi."
+    />
+    <meta property="og:url" content="https://bahlil-arcade.ryanprayoga.dev/" />
+    <meta property="og:image" content="https://bahlil-arcade.ryanprayoga.dev/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Bahlil Arcade — Tangkap MBG" />
+    <meta
+      name="twitter:description"
+      content="Sambut yang bergizi, tampik yang basi. Mini game satir 1 jari."
+    />
+    <meta name="twitter:image" content="https://bahlil-arcade.ryanprayoga.dev/og-image.png" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        background: #1c1510;
+        overflow: hidden;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: none;
+        overscroll-behavior: none;
+      }
+      #game {
+        width: 100%;
+        height: 100%;
+      }
+      #game canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

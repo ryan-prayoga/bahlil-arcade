@@ -1,0 +1,58 @@
+name: Deploy bahlil-arcade
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "public/**"
+      - "index.html"
+      - "package.json"
+      - "package-lock.json"
+      - "vite.config.ts"
+      - "tsconfig.json"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: bahlil-arcade-production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SERVER_DEPLOY_KEY }}
+          port: 22
+          script: |
+            set -e
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+            export PATH="/usr/bin:$HOME/.nvm/versions/node/v24.14.0/bin:$PATH"
+
+            DOMAIN="bahlil-arcade.ryanprayoga.dev"
+            PROJECT_DIR="/home/ubuntu/projects/bahlil-arcade"
+            DEPLOY_DIR="/var/www/$DOMAIN"
+            BRANCH="${{ github.ref_name }}"
+
+            if [ ! -d "$PROJECT_DIR/.git" ]; then
+              git clone https://github.com/ryan-prayoga/bahlil-arcade.git "$PROJECT_DIR"
+            fi
+
+            cd "$PROJECT_DIR"
+            git fetch origin
+            git checkout "$BRANCH"
+            git reset --hard "origin/$BRANCH"
+
+            npm ci
+            npm run build
+
+            mkdir -p "$DEPLOY_DIR"
+            rsync -az --delete dist/ "$DEPLOY_DIR/"
+
+            echo "Deploy complete: $(git rev-parse --short HEAD) ($(date))"

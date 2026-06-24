@@ -24,7 +24,8 @@ export default class BahlilLariScene extends Phaser.Scene {
   private coinBonus = 0;
   private score = 0;
   private nextObstacleAt = 0;
-  private pendingCoinAt = -1; // distance jadwal koin (di tengah gap), -1 = kosong
+  private pendingCoinAt = -1; // distance jadwal koin (di dalam gap), -1 = kosong
+  private pendingGap = 0; // ukuran gap aktif, buat pilih formasi
   private playing = false;
   private paused = false;
 
@@ -264,13 +265,17 @@ export default class BahlilLariScene extends Phaser.Scene {
       this.spawnObstacle();
       const gap = Phaser.Math.Between(LARI.gapMin, LARI.gapMax) + speedPad;
       this.nextObstacleAt = this.distance + gap;
-      // jadwalkan koin di tengah gap -> dijamin gak nimpa rintangan
-      if (this.pendingCoinAt < 0 && Math.random() < 0.85) {
-        this.pendingCoinAt = this.distance + gap * Phaser.Math.FloatBetween(0.42, 0.6);
+      // jadwalkan formasi koin di dalam gap (posisi acak, gak nimpa rintangan)
+      if (this.pendingCoinAt < 0 && Math.random() < 0.9) {
+        this.pendingGap = gap;
+        const frac = gap >= 480
+          ? Phaser.Math.FloatBetween(0.28, 0.44)
+          : Phaser.Math.FloatBetween(0.4, 0.66);
+        this.pendingCoinAt = this.distance + gap * frac;
       }
     }
     if (this.pendingCoinAt >= 0 && this.distance >= this.pendingCoinAt) {
-      this.spawnCoinArc();
+      this.spawnFormation(this.pendingGap);
       this.pendingCoinAt = -1;
     }
 
@@ -298,28 +303,54 @@ export default class BahlilLariScene extends Phaser.Scene {
     body.setSize(it.width * 0.7, it.height * 0.8);
     it.setVelocityX(-this.speed);
 
-    // sebagian rintangan dikasih busur koin DI ATAS-nya (reward lompatan)
-    if (Math.random() < 0.6) {
+    // sebagian kecil rintangan dikasih busur koin DI ATAS-nya (reward lompatan)
+    if (Math.random() < 0.32) {
       this.spawnArch(GAME_WIDTH + 50, it.y - it.displayHeight / 2);
     }
   }
 
-  // Koin rendah di tengah gap — disambar sambil lari, gak perlu lompat
-  private spawnCoinArc() {
-    const y = LARI.groundY - 40;
-    const n = Phaser.Math.Between(2, 3);
-    for (let i = 0; i < n; i++) this.makeCoin(GAME_WIDTH + 40 + i * 72, y);
+  // Formasi koin di dalam gap — pola & ketinggian acak biar gak monoton.
+  // Koin tinggi cuma muncul di gap lebar (mendarat tetap aman); selebihnya
+  // rendah/gelombang yang bisa disambar sambil lari.
+  private spawnFormation(gap: number) {
+    const gy = LARI.groundY;
+    const sp = Phaser.Math.Between(58, 82);
+    const baseX = GAME_WIDTH + 40;
+    const r = Math.random();
+
+    if (gap >= 500 && r < 0.32) {
+      // bonus lompat: kluster koin tinggi melengkung (opsional, gap lebar)
+      const n = Phaser.Math.Between(3, 4);
+      const peak = gy - Phaser.Math.Between(120, 150);
+      for (let i = 0; i < n; i++) {
+        const t = n === 1 ? 0.5 : i / (n - 1);
+        const y = peak + Math.abs(t - 0.5) * 42;
+        this.makeCoin(baseX + i * sp, y);
+      }
+      return;
+    }
+
+    // formasi rendah (run-through): kadang lurus, kadang gelombang, kadang tangga
+    const n = Phaser.Math.Between(2, 5);
+    const style = Math.floor(r * 3); // 0 lurus, 1 gelombang, 2 tangga
+    for (let i = 0; i < n; i++) {
+      let y = gy - 44;
+      if (style === 1) y = gy - 52 - Math.round(Math.sin(i * 0.95) * 16);
+      else if (style === 2) y = gy - 36 - i * 9;
+      this.makeCoin(baseX + i * sp, Phaser.Math.Clamp(y, gy - 74, gy - 32));
+    }
   }
 
   // Busur koin melengkung di atas rintangan (puncak setinggi apex lompat)
   private spawnArch(cx: number, topY: number) {
     const n = 5;
-    const spread = 172;
+    const spread = Phaser.Math.Between(150, 196);
+    const peakUp = Phaser.Math.Between(66, 88);
     for (let i = 0; i < n; i++) {
       const t = i / (n - 1); // 0..1
       const x = cx - spread / 2 + t * spread;
       const curve = Math.sin(t * Math.PI); // 0..1..0
-      const y = Phaser.Math.Linear(topY - 12, topY - 78, curve);
+      const y = Phaser.Math.Linear(topY - 12, topY - peakUp, curve);
       this.makeCoin(x, y);
     }
   }

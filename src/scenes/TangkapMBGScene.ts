@@ -1,5 +1,13 @@
 import Phaser from "phaser";
-import { GAME_WIDTH, GAME_HEIGHT, COLORS, CSS, FONTS, TANGKAP } from "../config";
+import {
+  GAME_WIDTH,
+  GAME_HEIGHT,
+  COLORS,
+  CSS,
+  FONTS,
+  TANGKAP,
+  STORAGE_KEYS,
+} from "../config";
 
 type ItemType = "mbg" | "basi" | "koin";
 
@@ -474,7 +482,13 @@ export default class TangkapMBGScene extends Phaser.Scene {
     this.player.setTexture("player_panik");
     this.cameras.main.shake(300, 0.02);
     this.time.delayedCall(450, () => {
-      this.scene.start("GameOver", { score: this.score, level: this.level + 1 });
+      this.scene.start("GameOver", {
+        score: this.score,
+        level: this.level + 1,
+        gameTitle: "Tangkap MBG",
+        sceneKey: "TangkapMBG",
+        highKey: STORAGE_KEYS.highScore,
+      });
     });
   }
 }

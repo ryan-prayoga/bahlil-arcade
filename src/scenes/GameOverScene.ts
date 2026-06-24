@@ -6,6 +6,9 @@ import { shareScore } from "../ui/ShareCard";
 interface GOData {
   score: number;
   level: number;
+  gameTitle?: string;
+  sceneKey?: string;
+  highKey?: string;
 }
 
 export default class GameOverScene extends Phaser.Scene {
@@ -21,10 +24,13 @@ export default class GameOverScene extends Phaser.Scene {
 
   create() {
     const score = this.goData.score;
-    const prevHigh = Number(localStorage.getItem(STORAGE_KEYS.highScore) ?? "0");
+    const gameTitle = this.goData.gameTitle ?? "Tangkap MBG";
+    const sceneKey = this.goData.sceneKey ?? "TangkapMBG";
+    const highKey = this.goData.highKey ?? STORAGE_KEYS.highScore;
+    const prevHigh = Number(localStorage.getItem(highKey) ?? "0");
     const isNewHigh = score > prevHigh;
     const high = Math.max(score, prevHigh);
-    if (isNewHigh) localStorage.setItem(STORAGE_KEYS.highScore, String(high));
+    if (isNewHigh) localStorage.setItem(highKey, String(high));
     const quote = randomQuote();
 
     this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, "bg");
@@ -48,9 +54,18 @@ export default class GameOverScene extends Phaser.Scene {
         .setOrigin(0.5),
     );
 
+    this.add
+      .text(cx, 156, gameTitle.toUpperCase(), {
+        fontFamily: FONTS.body,
+        fontSize: "15px",
+        fontStyle: "800",
+        color: CSS.white,
+      })
+      .setOrigin(0.5);
+
     if (isNewHigh) {
       const nh = this.add
-        .text(cx, 162, "★ REKOR BARU ★", {
+        .text(cx, 186, "★ REKOR BARU ★", {
           fontFamily: FONTS.body,
           fontSize: "20px",
           fontStyle: "800",
@@ -120,7 +135,7 @@ export default class GameOverScene extends Phaser.Scene {
     const btnY = GAME_HEIGHT - 224;
     this.makeButton(cx, btnY, "MAIN LAGI", COLORS.kuning, CSS.ink, () => {
       this.cameras.main.fadeOut(160, 28, 21, 16);
-      this.time.delayedCall(170, () => this.scene.start("TangkapMBG"));
+      this.time.delayedCall(170, () => this.scene.start(sceneKey));
     });
     const share = this.makeButton(
       cx,
@@ -131,7 +146,7 @@ export default class GameOverScene extends Phaser.Scene {
       async () => {
         share.label.setText("MENYIAPKAN…");
         const res = await shareScore({
-          gameTitle: "Tangkap MBG",
+          gameTitle,
           score,
           highScore: high,
           quote,

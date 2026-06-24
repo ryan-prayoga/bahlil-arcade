@@ -65,8 +65,24 @@ export const TANGKAP = {
   playerY: GAME_HEIGHT - 96,
 };
 
+// Game #2 — Bahlil Lari (endless runner)
+export const LARI = {
+  gravityY: 2100,
+  jumpForce: 760,
+  baseSpeed: 320, // px/detik scroll dunia
+  maxSpeed: 760,
+  speedRampPerSec: 12,
+  groundY: GAME_HEIGHT - 96, // garis tanah (kaki pemain)
+  playerX: 96,
+  gapMin: 320, // jarak antar rintangan (px) min
+  gapMax: 620,
+  coinScore: 25,
+  distancePerPoint: 14, // px ditempuh per 1 poin skor
+};
+
 export const STORAGE_KEYS = {
   highScore: "bahlil_arcade_tangkap_high",
+  highScoreLari: "bahlil_arcade_lari_high",
   muted: "bahlil_arcade_muted",
 };
 

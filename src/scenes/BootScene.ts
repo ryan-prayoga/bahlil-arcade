@@ -63,6 +63,105 @@ export default class BootScene extends Phaser.Scene {
     this.drawKoin("koin");
     this.drawHeart("nyawa");
     this.drawDot("spark", CSS.kuning);
+    this.drawGround("ground");
+    this.drawRintangan("rintangan");
+    this.drawAwan("awan");
+  }
+
+  // Tanah tileable (buat TileSprite scroll di Bahlil Lari)
+  private drawGround(key: string) {
+    const w = 64;
+    const h = 64;
+    const ctx = this.ctx(key, w, h);
+    if (!ctx) return;
+    ctx.fillStyle = "#b98a44";
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = "#a87a38";
+    ctx.fillRect(0, 0, w, 8);
+    ctx.strokeStyle = "#1c1510";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(0, 6);
+    ctx.lineTo(w, 6);
+    ctx.stroke();
+    // kerikil
+    ctx.fillStyle = "rgba(28,21,16,0.18)";
+    [
+      [12, 24],
+      [40, 30],
+      [26, 46],
+      [52, 50],
+      [6, 52],
+    ].forEach(([x, y]) => {
+      ctx.beginPath();
+      ctx.arc(x, y, 2.6, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    this.done(key);
+  }
+
+  // Rintangan: barrier proyek merah-putih
+  private drawRintangan(key: string) {
+    const w = 58;
+    const h = 66;
+    const ctx = this.ctx(key, w, h);
+    if (!ctx) return;
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 4;
+    // kaki
+    ctx.fillStyle = "#3a2e22";
+    ctx.fillRect(8, h - 14, 10, 14);
+    ctx.fillRect(w - 18, h - 14, 10, 14);
+    // papan
+    ctx.fillStyle = CSS.white;
+    rr(ctx, 4, 10, w - 8, 30, 6);
+    ctx.fill();
+    ctx.stroke();
+    // strip merah miring
+    ctx.save();
+    ctx.beginPath();
+    rr(ctx, 4, 10, w - 8, 30, 6);
+    ctx.clip();
+    ctx.fillStyle = CSS.merah;
+    for (let x = -30; x < w; x += 22) {
+      ctx.beginPath();
+      ctx.moveTo(x, 40);
+      ctx.lineTo(x + 11, 40);
+      ctx.lineTo(x + 11 + 18, 10);
+      ctx.lineTo(x + 18, 10);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+    // tiang
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(13, 40);
+    ctx.lineTo(13, h - 12);
+    ctx.moveTo(w - 13, 40);
+    ctx.lineTo(w - 13, h - 12);
+    ctx.stroke();
+    this.done(key);
+  }
+
+  // Awan flat buat parallax
+  private drawAwan(key: string) {
+    const w = 110;
+    const h = 56;
+    const ctx = this.ctx(key, w, h);
+    if (!ctx) return;
+    ctx.fillStyle = "rgba(251,247,236,0.85)";
+    ctx.strokeStyle = "rgba(28,21,16,0.25)";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(34, 34, 20, 0, Math.PI * 2);
+    ctx.arc(58, 26, 26, 0, Math.PI * 2);
+    ctx.arc(82, 34, 18, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.fill();
+    this.done(key);
   }
 
   private ctx(key: string, w: number, h: number): CanvasRenderingContext2D | null {

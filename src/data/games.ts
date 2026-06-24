@@ -25,7 +25,8 @@ export const GAMES: GameEntry[] = [
     title: "Bahlil Lari",
     tagline: "Lompati hambatan, kejar investasi.",
     iconKey: "player",
-    status: "soon",
+    status: "active",
+    sceneKey: "BahlilLari",
   },
   {
     id: "bagi-bagi-mbg",

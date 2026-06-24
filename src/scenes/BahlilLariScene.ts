@@ -266,7 +266,7 @@ export default class BahlilLariScene extends Phaser.Scene {
       const gap = Phaser.Math.Between(LARI.gapMin, LARI.gapMax) + speedPad;
       this.nextObstacleAt = this.distance + gap;
       // jadwalkan formasi koin di dalam gap (posisi acak, gak nimpa rintangan)
-      if (this.pendingCoinAt < 0 && Math.random() < 0.9) {
+      if (this.pendingCoinAt < 0 && Math.random() < 0.5) {
         this.pendingGap = gap;
         const frac = gap >= 480
           ? Phaser.Math.FloatBetween(0.28, 0.44)
@@ -304,7 +304,7 @@ export default class BahlilLariScene extends Phaser.Scene {
     it.setVelocityX(-this.speed);
 
     // sebagian kecil rintangan dikasih busur koin DI ATAS-nya (reward lompatan)
-    if (Math.random() < 0.32) {
+    if (Math.random() < 0.2) {
       this.spawnArch(GAME_WIDTH + 50, it.y - it.displayHeight / 2);
     }
   }
@@ -314,37 +314,37 @@ export default class BahlilLariScene extends Phaser.Scene {
   // rendah/gelombang yang bisa disambar sambil lari.
   private spawnFormation(gap: number) {
     const gy = LARI.groundY;
-    const sp = Phaser.Math.Between(58, 82);
-    const baseX = GAME_WIDTH + 40;
+    const sp = Phaser.Math.Between(96, 132); // jarak antar koin > lebar koin
+    const baseX = GAME_WIDTH + 44;
     const r = Math.random();
 
-    if (gap >= 500 && r < 0.32) {
+    if (gap >= 520 && r < 0.3) {
       // bonus lompat: kluster koin tinggi melengkung (opsional, gap lebar)
-      const n = Phaser.Math.Between(3, 4);
+      const n = Phaser.Math.Between(2, 3);
       const peak = gy - Phaser.Math.Between(120, 150);
       for (let i = 0; i < n; i++) {
         const t = n === 1 ? 0.5 : i / (n - 1);
-        const y = peak + Math.abs(t - 0.5) * 42;
+        const y = peak + Math.abs(t - 0.5) * 40;
         this.makeCoin(baseX + i * sp, y);
       }
       return;
     }
 
     // formasi rendah (run-through): kadang lurus, kadang gelombang, kadang tangga
-    const n = Phaser.Math.Between(2, 5);
+    const n = Phaser.Math.Between(1, 4);
     const style = Math.floor(r * 3); // 0 lurus, 1 gelombang, 2 tangga
     for (let i = 0; i < n; i++) {
       let y = gy - 44;
       if (style === 1) y = gy - 52 - Math.round(Math.sin(i * 0.95) * 16);
-      else if (style === 2) y = gy - 36 - i * 9;
+      else if (style === 2) y = gy - 36 - i * 10;
       this.makeCoin(baseX + i * sp, Phaser.Math.Clamp(y, gy - 74, gy - 32));
     }
   }
 
   // Busur koin melengkung di atas rintangan (puncak setinggi apex lompat)
   private spawnArch(cx: number, topY: number) {
-    const n = 5;
-    const spread = Phaser.Math.Between(150, 196);
+    const n = 4;
+    const spread = Phaser.Math.Between(190, 230);
     const peakUp = Phaser.Math.Between(66, 88);
     for (let i = 0; i < n; i++) {
       const t = i / (n - 1); // 0..1
@@ -357,6 +357,7 @@ export default class BahlilLariScene extends Phaser.Scene {
 
   private makeCoin(x: number, y: number) {
     const it = this.coins.create(x, y, "koin") as Phaser.Physics.Arcade.Image;
+    it.setScale(0.82); // ~54px, biar ada celah antar koin
     (it.body as Phaser.Physics.Arcade.Body).setAllowGravity(false);
     it.setDepth(6);
     it.setVelocityX(-this.speed);

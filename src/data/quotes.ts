@@ -11,22 +11,22 @@
 //   tinggal dimitigasi dan disiasati."
 
 export const QUOTES: string[] = [
-  "Keracunan itu plus-minus biasa — tinggal dimitigasi dan disiasati.",
-  "Kata Pak Menteri, nggak viral nggak top. Nih, kamu udah top.",
-  "37 ribu korban, anggaran tetap terserap 93 persen. Mantap.",
-  "Baru 56 persen dapur lulus higiene, sisanya lulus pasrah.",
-  "Rp1 miliar sebulan per dapur, sendok plastiknya masih dihitung.",
-  "70 persen buat bahan baku, 30 persen buat doa biar nggak basi.",
-  "Gizinya gratis, ongkos cuci lambung tanggung sendiri.",
-  "Doktor kelar 1 tahun 8 bulan, sertifikat dapur entah tahun berapa.",
-  "Ngurus migas sama partai aja repot, apalagi ngecek nasimu.",
-  "Anggaran Rp335 triliun, yang nyampe piring tinggal micin.",
-  "Antre LPG belum kelar, sekarang gantian antre ke UGD.",
-  "Target 60 juta penerima, bonus 37 ribu pasien.",
-  "Menu ganti tiap minggu, yang konsisten cuma sakit perutnya.",
-  "Yang penting serapan anggaran — serapan gizi nanti dulu.",
-  "Jawa Tengah juara korban, pialanya sekotak nasi basi.",
-  "Dari jualan kue sampai atur negara, ujian mutunya tetap nggak lulus.",
+  "Selamat! Menu gratis, tiket UGD bonus.",
+  "Gizi seimbang: setengah nasi, setengah bakteri.",
+  "Nasinya gratis, rawat inapnya yang mahal.",
+  "Mama: jangan jajan sembarangan. Negara: nih, gratis.",
+  "Bukan basi, ayamnya lagi healing.",
+  "Telur satu dibagi sekelas — adil, kan?",
+  "Kata Mas Bahlil: nggak viral nggak top. Selamat, kamu trending.",
+  "Keracunan itu plus-minus biasa, katanya. Mitigasi sendiri ya.",
+  "Beliau doktor 1,5 tahun, dapurnya masih 'sertifikat menyusul'.",
+  "Sibuk ngurus bensin sama partai, nasimu antre belakangan.",
+  "Mas Bahlil ganteng, sayang ayamnya nggak se-fresh senyumnya.",
+  "Anggaran triliunan, micin tetap pemain inti.",
+  "Grup WA wali murid udah ramai, rapatnya masih 'evaluasi'.",
+  "Katanya buat masa depan bangsa — masa depanmu di kasur tiga hari.",
+  "Programnya lancar jaya, kamu yang nggak bisa jalan.",
+  "Yang penting fotonya senyum, isinya urusan nanti.",
 ];
 
 export function randomQuote(rng: () => number = Math.random): string {

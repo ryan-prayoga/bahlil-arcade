@@ -7,6 +7,8 @@ export default class TangkapMBGScene extends Phaser.Scene {
   private player!: Phaser.Physics.Arcade.Image;
   private items!: Phaser.Physics.Arcade.Group;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
+  private keyA!: Phaser.Input.Keyboard.Key;
+  private keyD!: Phaser.Input.Keyboard.Key;
 
   private score = 0;
   private lives = TANGKAP.startLives;
@@ -15,11 +17,13 @@ export default class TangkapMBGScene extends Phaser.Scene {
   private level = 0;
   private spawnAcc = 0;
   private playing = false;
+  private paused = false;
   private pointerX: number | null = null;
 
   private scoreText!: Phaser.GameObjects.Text;
   private comboText!: Phaser.GameObjects.Text;
   private hearts: Phaser.GameObjects.Image[] = [];
+  private pauseOverlay?: Phaser.GameObjects.Container;
 
   constructor() {
     super("TangkapMBG");
@@ -34,8 +38,10 @@ export default class TangkapMBGScene extends Phaser.Scene {
     this.level = 0;
     this.spawnAcc = 0;
     this.playing = false;
+    this.paused = false;
     this.pointerX = null;
     this.hearts = [];
+    this.pauseOverlay = undefined;
 
     this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, "bg");
 
@@ -117,6 +123,102 @@ export default class TangkapMBGScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setDepth(11);
     back.on("pointerdown", () => this.scene.start("Hub"));
+
+    // tombol jeda (kiri MENU)
+    const px = bx - 66;
+    const pauseBtn = this.add
+      .rectangle(px, 30, 40, 32, COLORS.kuning)
+      .setStrokeStyle(3, COLORS.ink)
+      .setDepth(10)
+      .setInteractive({ useHandCursor: true });
+    this.add
+      .text(px, 28, "II", {
+        fontFamily: FONTS.body,
+        fontSize: "16px",
+        fontStyle: "800",
+        color: CSS.ink,
+      })
+      .setOrigin(0.5)
+      .setDepth(11);
+    pauseBtn.on("pointerdown", () => this.togglePause());
+  }
+
+  // ---------- Jeda ----------
+
+  private togglePause() {
+    if (this.paused) this.resumeGame();
+    else if (this.playing) this.pauseGame();
+  }
+
+  private pauseGame() {
+    this.paused = true;
+    this.playing = false;
+    this.pointerX = null;
+    this.physics.pause();
+
+    const c = this.add.container(0, 0).setDepth(40);
+    c.add(
+      this.add.rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, COLORS.ink, 0.72).setOrigin(0),
+    );
+    c.add(
+      this.add
+        .text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 90, "JEDA", {
+          fontFamily: FONTS.display,
+          fontSize: "72px",
+          color: CSS.kuning,
+        })
+        .setOrigin(0.5),
+    );
+    c.add(
+      this.add
+        .text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 36, "Esc / P buat lanjut", {
+          fontFamily: FONTS.body,
+          fontSize: "14px",
+          fontStyle: "700",
+          color: CSS.muted,
+        })
+        .setOrigin(0.5),
+    );
+    this.overlayButton(c, GAME_WIDTH / 2, GAME_HEIGHT / 2 + 30, "LANJUT", COLORS.kuning, () =>
+      this.resumeGame(),
+    );
+    this.overlayButton(c, GAME_WIDTH / 2, GAME_HEIGHT / 2 + 100, "‹ MENU", COLORS.kraft, () =>
+      this.scene.start("Hub"),
+    );
+    this.pauseOverlay = c;
+  }
+
+  private resumeGame() {
+    this.paused = false;
+    this.pointerX = null;
+    this.pauseOverlay?.destroy();
+    this.pauseOverlay = undefined;
+    this.physics.resume();
+    this.playing = true;
+  }
+
+  private overlayButton(
+    parent: Phaser.GameObjects.Container,
+    x: number,
+    y: number,
+    label: string,
+    bg: number,
+    onClick: () => void,
+  ) {
+    const rect = this.add
+      .rectangle(x, y, 220, 52, bg)
+      .setStrokeStyle(3, COLORS.ink)
+      .setInteractive({ useHandCursor: true });
+    const txt = this.add
+      .text(x, y - 1, label, {
+        fontFamily: FONTS.body,
+        fontSize: "20px",
+        fontStyle: "800",
+        color: CSS.ink,
+      })
+      .setOrigin(0.5);
+    rect.on("pointerdown", onClick);
+    parent.add([rect, txt]);
   }
 
   private drawHearts() {
@@ -134,13 +236,22 @@ export default class TangkapMBGScene extends Phaser.Scene {
   // ---------- Input ----------
 
   private bindInput() {
-    this.cursors = this.input.keyboard!.createCursorKeys();
+    const kb = this.input.keyboard!;
+    this.cursors = kb.createCursorKeys();
+    this.keyA = kb.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+    this.keyD = kb.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+
+    // sentuh/mouse: hanya update kalau pointer ditekan/digeser (bukan saat keyboard dipakai)
     this.input.on("pointermove", (p: Phaser.Input.Pointer) => {
-      this.pointerX = p.worldX;
+      if (!this.paused) this.pointerX = p.worldX;
     });
     this.input.on("pointerdown", (p: Phaser.Input.Pointer) => {
-      this.pointerX = p.worldX;
+      if (!this.paused) this.pointerX = p.worldX;
     });
+
+    // ESC / P = jeda; jangan biar ESC ke-capture browser
+    kb.on("keydown-ESC", () => this.togglePause());
+    kb.on("keydown-P", () => this.togglePause());
   }
 
   private showCountdown() {
@@ -176,18 +287,18 @@ export default class TangkapMBGScene extends Phaser.Scene {
   // ---------- Loop ----------
 
   update(_time: number, delta: number) {
-    if (!this.playing) return;
+    if (!this.playing || this.paused) return;
 
-    // gerak player
-    const body = this.player.body as Phaser.Physics.Arcade.Body;
-    if (this.pointerX !== null) {
+    // gerak player — input terakhir menang (keyboard ngalahin pointer & sebaliknya)
+    const leftDown = this.cursors.left.isDown || this.keyA.isDown;
+    const rightDown = this.cursors.right.isDown || this.keyD.isDown;
+    if (leftDown || rightDown) {
+      this.pointerX = null; // keyboard ambil alih, lepas kunci pointer
+      const dir = (rightDown ? 1 : 0) - (leftDown ? 1 : 0);
+      this.player.x += (dir * TANGKAP.playerSpeed * delta) / 1000;
+    } else if (this.pointerX !== null) {
       const target = Phaser.Math.Clamp(this.pointerX, 55, GAME_WIDTH - 55);
       this.player.x = Phaser.Math.Linear(this.player.x, target, 0.45);
-      body.velocity.x = 0;
-    } else if (this.cursors.left.isDown) {
-      this.player.x -= (TANGKAP.playerSpeed * delta) / 1000;
-    } else if (this.cursors.right.isDown) {
-      this.player.x += (TANGKAP.playerSpeed * delta) / 1000;
     }
     this.player.x = Phaser.Math.Clamp(this.player.x, 55, GAME_WIDTH - 55);
 

@@ -297,24 +297,39 @@ export default class BahlilLariScene extends Phaser.Scene {
     it.y = LARI.groundY - it.displayHeight / 2 + 2;
     body.setSize(it.width * 0.7, it.height * 0.8);
     it.setVelocityX(-this.speed);
+
+    // sebagian rintangan dikasih busur koin DI ATAS-nya (reward lompatan)
+    if (Math.random() < 0.6) {
+      this.spawnArch(GAME_WIDTH + 50, it.y - it.displayHeight / 2);
+    }
   }
 
-  // Koin spawn sebagai arc 1–3 biji di tengah gap (aman dari rintangan)
+  // Koin rendah di tengah gap — disambar sambil lari, gak perlu lompat
   private spawnCoinArc() {
-    const high = Math.random() < 0.6;
-    const y = LARI.groundY - (high ? Phaser.Math.Between(120, 165) : 40);
-    const n = Phaser.Math.Between(1, 3);
+    const y = LARI.groundY - 40;
+    const n = Phaser.Math.Between(2, 3);
+    for (let i = 0; i < n; i++) this.makeCoin(GAME_WIDTH + 40 + i * 72, y);
+  }
+
+  // Busur koin melengkung di atas rintangan (puncak setinggi apex lompat)
+  private spawnArch(cx: number, topY: number) {
+    const n = 5;
+    const spread = 172;
     for (let i = 0; i < n; i++) {
-      const it = this.coins.create(
-        GAME_WIDTH + 40 + i * 46,
-        y,
-        "koin",
-      ) as Phaser.Physics.Arcade.Image;
-      (it.body as Phaser.Physics.Arcade.Body).setAllowGravity(false);
-      it.setDepth(6);
-      it.setVelocityX(-this.speed);
-      this.tweens.add({ targets: it, angle: 360, duration: 900, repeat: -1 });
+      const t = i / (n - 1); // 0..1
+      const x = cx - spread / 2 + t * spread;
+      const curve = Math.sin(t * Math.PI); // 0..1..0
+      const y = Phaser.Math.Linear(topY - 12, topY - 78, curve);
+      this.makeCoin(x, y);
     }
+  }
+
+  private makeCoin(x: number, y: number) {
+    const it = this.coins.create(x, y, "koin") as Phaser.Physics.Arcade.Image;
+    (it.body as Phaser.Physics.Arcade.Body).setAllowGravity(false);
+    it.setDepth(6);
+    it.setVelocityX(-this.speed);
+    this.tweens.add({ targets: it, angle: 360, duration: 900, repeat: -1 });
   }
 
   // ---------- Tabrakan ----------

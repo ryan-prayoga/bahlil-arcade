@@ -24,7 +24,7 @@ export default class BahlilLariScene extends Phaser.Scene {
   private coinBonus = 0;
   private score = 0;
   private nextObstacleAt = 0;
-  private nextCoinAt = 0;
+  private pendingCoinAt = -1; // distance jadwal koin (di tengah gap), -1 = kosong
   private playing = false;
   private paused = false;
 
@@ -41,7 +41,7 @@ export default class BahlilLariScene extends Phaser.Scene {
     this.coinBonus = 0;
     this.score = 0;
     this.nextObstacleAt = 480;
-    this.nextCoinAt = 320;
+    this.pendingCoinAt = 260; // koin pembuka (sebelum rintangan pertama)
     this.playing = false;
     this.paused = false;
     this.clouds = [];
@@ -262,12 +262,16 @@ export default class BahlilLariScene extends Phaser.Scene {
     const speedPad = (this.speed - LARI.baseSpeed) * 0.55;
     if (this.distance >= this.nextObstacleAt) {
       this.spawnObstacle();
-      this.nextObstacleAt =
-        this.distance + Phaser.Math.Between(LARI.gapMin, LARI.gapMax) + speedPad;
+      const gap = Phaser.Math.Between(LARI.gapMin, LARI.gapMax) + speedPad;
+      this.nextObstacleAt = this.distance + gap;
+      // jadwalkan koin di tengah gap -> dijamin gak nimpa rintangan
+      if (this.pendingCoinAt < 0 && Math.random() < 0.85) {
+        this.pendingCoinAt = this.distance + gap * Phaser.Math.FloatBetween(0.42, 0.6);
+      }
     }
-    if (this.distance >= this.nextCoinAt) {
-      this.spawnCoin();
-      this.nextCoinAt = this.distance + Phaser.Math.Between(220, 460);
+    if (this.pendingCoinAt >= 0 && this.distance >= this.pendingCoinAt) {
+      this.spawnCoinArc();
+      this.pendingCoinAt = -1;
     }
 
     // miring badan sesuai gerak vertikal
@@ -295,23 +299,22 @@ export default class BahlilLariScene extends Phaser.Scene {
     it.setVelocityX(-this.speed);
   }
 
-  private spawnCoin() {
-    const high = Math.random() < 0.55;
-    const y = LARI.groundY - (high ? Phaser.Math.Between(110, 170) : 36);
-    const it = this.coins.create(
-      GAME_WIDTH + 40,
-      y,
-      "koin",
-    ) as Phaser.Physics.Arcade.Image;
-    (it.body as Phaser.Physics.Arcade.Body).setAllowGravity(false);
-    it.setDepth(6);
-    it.setVelocityX(-this.speed);
-    this.tweens.add({
-      targets: it,
-      angle: 360,
-      duration: 900,
-      repeat: -1,
-    });
+  // Koin spawn sebagai arc 1–3 biji di tengah gap (aman dari rintangan)
+  private spawnCoinArc() {
+    const high = Math.random() < 0.6;
+    const y = LARI.groundY - (high ? Phaser.Math.Between(120, 165) : 40);
+    const n = Phaser.Math.Between(1, 3);
+    for (let i = 0; i < n; i++) {
+      const it = this.coins.create(
+        GAME_WIDTH + 40 + i * 46,
+        y,
+        "koin",
+      ) as Phaser.Physics.Arcade.Image;
+      (it.body as Phaser.Physics.Arcade.Body).setAllowGravity(false);
+      it.setDepth(6);
+      it.setVelocityX(-this.speed);
+      this.tweens.add({ targets: it, angle: 360, duration: 900, repeat: -1 });
+    }
   }
 
   // ---------- Tabrakan ----------

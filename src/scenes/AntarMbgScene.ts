@@ -19,6 +19,7 @@ export default class AntarMbgScene extends Phaser.Scene {
   private score = 0;
   private lives = ANTAR.startLives;
   private nextRowAt = 0;
+  private safeLane = 1; // lajur lolos baris terakhir (jalur "ular")
   private invuln = false;
   private playing = false;
   private paused = false;
@@ -40,7 +41,8 @@ export default class AntarMbgScene extends Phaser.Scene {
     this.boxBonus = 0;
     this.score = 0;
     this.lives = ANTAR.startLives;
-    this.nextRowAt = 260;
+    this.nextRowAt = 300;
+    this.safeLane = 1;
     this.invuln = false;
     this.playing = false;
     this.paused = false;
@@ -63,7 +65,7 @@ export default class AntarMbgScene extends Phaser.Scene {
       .image(this.laneX[this.lane], ANTAR.truckY, "truk")
       .setDepth(6);
     (this.truck.body as Phaser.Physics.Arcade.Body).setAllowGravity(false);
-    this.truck.body!.setSize(80, 110);
+    this.truck.body!.setSize(60, 72); // hitbox ketat -> kena cuma pas beneran sejajar
 
     this.items = this.physics.add.group();
     this.physics.add.overlap(
@@ -246,19 +248,28 @@ export default class AntarMbgScene extends Phaser.Scene {
 
   private spawnRow() {
     const f = (this.speed - ANTAR.baseSpeed) / (ANTAR.maxSpeed - ANTAR.baseSpeed);
-    const maxObs = Math.random() < 0.4 + f * 0.3 ? 2 : 1; // makin cepat makin sering 2
-    const lanes = [0, 1, 2];
-    Phaser.Utils.Array.Shuffle(lanes);
-    const obsLanes = lanes.slice(0, maxObs); // <= 2 -> minimal 1 lajur bebas
-    const freeLanes = lanes.slice(maxObs);
+    // jalur "ular": lajur aman cuma geser <=1 dari baris sebelumnya -> selalu kejangkau
+    this.safeLane = Phaser.Math.Clamp(
+      this.safeLane + Phaser.Math.Between(-1, 1),
+      0,
+      ANTAR.lanes - 1,
+    );
+    const others = [0, 1, 2].filter((l) => l !== this.safeLane);
 
+    // jumlah halangan di lajur non-aman: 1 atau 2 (makin cepat makin sering 2)
+    const obsCount = Math.random() < 0.35 + f * 0.35 ? 2 : 1;
+    Phaser.Utils.Array.Shuffle(others);
+    const obsLanes = others.slice(0, obsCount);
     obsLanes.forEach((ln) => {
       const tex = Math.random() < 0.55 ? "rintangan" : "mbg_basi";
       this.spawnItem(ln, tex, "obstacle");
     });
-    // kadang taruh kotak gizi di lajur bebas
-    if (freeLanes.length && Math.random() < 0.6) {
-      this.spawnItem(freeLanes[0], "mbg", "box");
+
+    // kotak gizi: kadang di lajur aman (di jalur), kadang di lajur non-aman yang kosong
+    const emptyOthers = others.filter((l) => !obsLanes.includes(l));
+    if (Math.random() < 0.55) {
+      const ln = Math.random() < 0.5 && emptyOthers.length ? emptyOthers[0] : this.safeLane;
+      this.spawnItem(ln, "mbg", "box");
     }
   }
 
@@ -270,7 +281,9 @@ export default class AntarMbgScene extends Phaser.Scene {
     it.setData("kind", kind);
     it.setData("hit", false);
     if (tex === "rintangan") it.setScale(1.1);
-    body.setSize(it.width * 0.7, it.height * 0.7);
+    // hitbox: halangan ketat (adil), kotak gizi longgar (gampang disambar)
+    const k = kind === "obstacle" ? 0.58 : 0.82;
+    body.setSize(it.width * k, it.height * k);
     it.setVelocityY(this.speed);
   }
 

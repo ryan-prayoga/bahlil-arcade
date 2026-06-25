@@ -104,8 +104,8 @@ export const ANTAR = {
   maxSpeed: 720,
   speedRampPerSec: 13,
   truckY: GAME_HEIGHT - 150,
-  rowGapMin: 220, // jarak antar baris spawn (px)
-  rowGapMax: 360,
+  rowGapMin: 290, // jarak antar baris spawn (px) — cukup buat 1x pindah lajur
+  rowGapMax: 420,
   scoreBox: 15,
   distancePerPoint: 16,
 };

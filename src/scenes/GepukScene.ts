@@ -437,7 +437,7 @@ export default class GepukScene extends Phaser.Scene {
 
   private endRound() {
     this.playing = false;
-    this.time.paused = true;
+    // JANGAN pause clock di sini — delayedCall butuh clock jalan biar transisi nembak
     const level = Math.floor(this.score / 200) + 1;
     this.time.delayedCall(300, () => {
       this.scene.start("GameOver", {

@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { GAME_WIDTH, GAME_HEIGHT, COLORS, CSS, FONTS, STORAGE_KEYS } from "../config";
+import { GAME_WIDTH, GAME_HEIGHT, COLORS, CSS, FONTS } from "../config";
 import { GAMES, GameEntry } from "../data/games";
 
 export default class HubScene extends Phaser.Scene {
@@ -126,12 +126,13 @@ export default class HubScene extends Phaser.Scene {
       .rectangle(0, 0, w - 14, h - 14, 0x000000, 0)
       .setStrokeStyle(1.5, COLORS.ink, active ? 0.5 : 0.3);
 
-    const icon = this.add
-      .image(0, active ? -46 : -40, g.iconKey)
-      .setScale(g.iconKey.startsWith("player") ? 0.74 : 0.95);
+    const icon = this.add.image(0, active ? -28 : -40, g.iconKey);
+    // fit ikon ke kotak biar gak ada yang nyembul (truk dll)
+    const fit = Math.min(86 / icon.width, 70 / icon.height, 1);
+    icon.setScale(fit);
 
     const title = this.add
-      .text(0, active ? 18 : 26, g.title, {
+      .text(0, active ? 26 : 26, g.title, {
         fontFamily: FONTS.display,
         fontSize: "26px",
         color: CSS.ink,
@@ -139,6 +140,20 @@ export default class HubScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     cont.add([bg, inner, icon, title]);
+
+    // rekor per game (pojok atas kartu)
+    if (g.highKey) {
+      const high = Number(localStorage.getItem(g.highKey) || "0");
+      const rekor = this.add
+        .text(0, -h / 2 + 15, `REKOR ${high.toLocaleString("id-ID")}`, {
+          fontFamily: FONTS.mono,
+          fontSize: "12px",
+          fontStyle: "700",
+          color: active ? CSS.merahDark : CSS.muted,
+        })
+        .setOrigin(0.5);
+      cont.add(rekor);
+    }
 
     if (active) {
       const pill = this.add
@@ -220,40 +235,15 @@ export default class HubScene extends Phaser.Scene {
 
   private buildFooter() {
     const cx = GAME_WIDTH / 2;
-    const high = Number(localStorage.getItem(STORAGE_KEYS.highScore) ?? "0");
-    const fy = GAME_HEIGHT - 64;
-
-    // strip struk
-    const strip = this.add
-      .rectangle(cx, fy, GAME_WIDTH - 40, 36, COLORS.white)
-      .setStrokeStyle(2, COLORS.ink);
-    void strip;
     this.add
-      .text(46, fy, "REKOR · TANGKAP MBG", {
-        fontFamily: FONTS.mono,
+      .text(cx, GAME_HEIGHT - 30, "Konten parodi · bukan tokoh asli", {
+        fontFamily: FONTS.body,
         fontSize: "12px",
         color: CSS.inkSoft,
         fontStyle: "700",
       })
-      .setOrigin(0, 0.5);
-    this.add
-      .text(GAME_WIDTH - 46, fy, String(high).padStart(5, "0"), {
-        fontFamily: FONTS.mono,
-        fontSize: "18px",
-        color: CSS.merahDark,
-        fontStyle: "700",
-      })
-      .setOrigin(1, 0.5);
-
-    this.add
-      .text(cx, GAME_HEIGHT - 26, "Konten parodi · bukan tokoh asli", {
-        fontFamily: FONTS.body,
-        fontSize: "11px",
-        color: CSS.inkSoft,
-        fontStyle: "700",
-      })
       .setOrigin(0.5)
-      .setAlpha(0.7);
+      .setAlpha(0.75);
   }
 
   private showToast(msg: string) {

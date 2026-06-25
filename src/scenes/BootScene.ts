@@ -66,6 +66,131 @@ export default class BootScene extends Phaser.Scene {
     this.drawGround("ground");
     this.drawRintangan("rintangan");
     this.drawAwan("awan");
+    this.drawLubangBack("lubang_back");
+    this.drawLubangFront("lubang_front");
+    this.drawWarga("warga");
+    this.drawPalu("palu");
+  }
+
+  // Lubang (belakang): gundukan + mulut gelap
+  private drawLubangBack(key: string) {
+    const w = 140;
+    const h = 92;
+    const ctx = this.ctx(key, w, h);
+    if (!ctx) return;
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 4;
+    // gundukan
+    ctx.fillStyle = "#b98a44";
+    ctx.beginPath();
+    ctx.ellipse(w / 2, h * 0.62, 64, 30, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    // mulut gelap
+    ctx.fillStyle = "#2a2118";
+    ctx.beginPath();
+    ctx.ellipse(w / 2, h * 0.46, 52, 22, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    this.done(key);
+  }
+
+  // Lubang (depan): bibir gundukan buat nutup bagian bawah karakter
+  private drawLubangFront(key: string) {
+    const w = 140;
+    const h = 40;
+    const ctx = this.ctx(key, w, h);
+    if (!ctx) return;
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 4;
+    ctx.fillStyle = "#cf9b54";
+    // setengah elips bawah (bibir depan)
+    ctx.beginPath();
+    ctx.ellipse(w / 2, 6, 64, 28, 0, 0, Math.PI);
+    ctx.fill();
+    ctx.stroke();
+    this.done(key);
+  }
+
+  // Warga (umpan — JANGAN digepuk): beda jelas dari Bahlil (gak ada peci/batik)
+  private drawWarga(key: string) {
+    const w = 120;
+    const h = 132;
+    const ctx = this.ctx(key, w, h);
+    if (!ctx) return;
+    const cx = w / 2;
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = INK;
+
+    // badan kaos biru polos
+    ctx.fillStyle = "#3a78b5";
+    ctx.lineWidth = 5;
+    rr(ctx, cx - 34, 74, 68, 46, 14);
+    ctx.fill();
+    ctx.stroke();
+    // tangan ngangkat (jangan!)
+    ctx.fillStyle = "#c08a52";
+    ctx.lineWidth = 4;
+    [cx - 30, cx + 30].forEach((hx, i) => {
+      ctx.save();
+      ctx.translate(hx, 78);
+      ctx.rotate(i === 0 ? 0.5 : -0.5);
+      rr(ctx, -7, -34, 14, 34, 7);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    });
+    // kepala
+    ctx.fillStyle = "#d59b63";
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.arc(cx, 48, 27, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    // rambut (bukan peci) — poni
+    ctx.fillStyle = "#2a2018";
+    ctx.beginPath();
+    ctx.arc(cx, 40, 27, Math.PI * 1.05, Math.PI * 1.95, false);
+    ctx.lineTo(cx, 40);
+    ctx.fill();
+    // mata khawatir + mulut
+    ctx.fillStyle = INK;
+    [cx - 9, cx + 9].forEach((ex) => {
+      ctx.beginPath();
+      ctx.arc(ex, 48, 3.4, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(cx, 66, 8, Math.PI * 1.15, Math.PI * 1.85, false); // mulut sedih
+    ctx.stroke();
+    this.done(key);
+  }
+
+  // Palu gepuk (efek pas ngetuk)
+  private drawPalu(key: string) {
+    const w = 96;
+    const h = 116;
+    const ctx = this.ctx(key, w, h);
+    if (!ctx) return;
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 5;
+    // gagang
+    ctx.fillStyle = "#9a6b35";
+    rr(ctx, w / 2 - 9, 36, 18, h - 40, 6);
+    ctx.fill();
+    ctx.stroke();
+    // kepala palu
+    ctx.fillStyle = CSS.merah;
+    rr(ctx, 14, 6, w - 28, 40, 10);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = "rgba(255,255,255,0.18)";
+    rr(ctx, 14, 6, w - 28, 18, 10);
+    ctx.fill();
+    this.done(key);
   }
 
   // Tanah tileable (buat TileSprite scroll di Bahlil Lari)

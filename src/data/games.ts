@@ -41,6 +41,7 @@ export const GAMES: GameEntry[] = [
     title: "Gepuk Bahlil",
     tagline: "Gercep sebelum dia kabur.",
     iconKey: "player_panik",
-    status: "soon",
+    status: "active",
+    sceneKey: "Gepuk",
   },
 ];

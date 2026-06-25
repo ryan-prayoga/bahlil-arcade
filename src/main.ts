@@ -5,6 +5,7 @@ import HubScene from "./scenes/HubScene";
 import TangkapMBGScene from "./scenes/TangkapMBGScene";
 import BahlilLariScene from "./scenes/BahlilLariScene";
 import BagiBagiScene from "./scenes/BagiBagiScene";
+import GepukScene from "./scenes/GepukScene";
 import GameOverScene from "./scenes/GameOverScene";
 
 const config: Phaser.Types.Core.GameConfig = {
@@ -34,6 +35,7 @@ const config: Phaser.Types.Core.GameConfig = {
     TangkapMBGScene,
     BahlilLariScene,
     BagiBagiScene,
+    GepukScene,
     GameOverScene,
   ],
 };

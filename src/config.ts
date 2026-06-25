@@ -80,10 +80,27 @@ export const LARI = {
   distancePerPoint: 14, // px ditempuh per 1 poin skor
 };
 
+// Game #4 — Gepuk Bahlil (whack-a-mole)
+export const GEPUK = {
+  round: 30000, // durasi ronde (ms)
+  cols: 3,
+  rows: 3,
+  baseInterval: 900, // jeda spawn awal (ms)
+  minInterval: 360,
+  baseUp: 1150, // durasi nongol awal (ms)
+  minUp: 640,
+  score: 10,
+  gold: 30,
+  wargaPenalty: 60,
+  goldChance: 0.12,
+  wargaChance: 0.2,
+};
+
 export const STORAGE_KEYS = {
   highScore: "bahlil_arcade_tangkap_high",
   highScoreLari: "bahlil_arcade_lari_high",
   bagibagi: "bahlil_arcade_bagibagi_save",
+  highScoreGepuk: "bahlil_arcade_gepuk_high",
   muted: "bahlil_arcade_muted",
 };
 

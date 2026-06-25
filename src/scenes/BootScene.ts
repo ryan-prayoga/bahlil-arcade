@@ -70,6 +70,74 @@ export default class BootScene extends Phaser.Scene {
     this.drawLubangFront("lubang_front");
     this.drawWarga("warga");
     this.drawPalu("palu");
+    this.drawTruk("truk");
+    this.drawMarka("marka");
+  }
+
+  // Truk distribusi MBG (tampak belakang)
+  private drawTruk(key: string) {
+    const w = 116;
+    const h = 150;
+    const ctx = this.ctx(key, w, h);
+    if (!ctx) return;
+    const cx = w / 2;
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 5;
+
+    // roda
+    ctx.fillStyle = "#241c16";
+    [10, w - 22].forEach((rx) => {
+      rr(ctx, rx, 36, 12, 80, 6);
+      ctx.fill();
+      ctx.stroke();
+    });
+    // atap kabin (merah) di atas
+    ctx.fillStyle = CSS.merah;
+    rr(ctx, cx - 40, 8, 80, 26, 8);
+    ctx.fill();
+    ctx.stroke();
+    // bak boks
+    ctx.fillStyle = "#f6f1e6";
+    rr(ctx, cx - 44, 30, 88, 104, 10);
+    ctx.fill();
+    ctx.stroke();
+    // pintu belakang (garis tengah)
+    ctx.strokeStyle = INK;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(cx, 36);
+    ctx.lineTo(cx, 128);
+    ctx.stroke();
+    // tulisan MBG
+    ctx.fillStyle = CSS.hijauDark;
+    ctx.font = "800 30px 'Plus Jakarta Sans', system-ui, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("MBG", cx, 70);
+    // lampu belakang
+    ctx.fillStyle = CSS.kuning;
+    [cx - 30, cx + 30].forEach((lx) => {
+      ctx.beginPath();
+      ctx.arc(lx, 124, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = INK;
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    });
+    this.done(key);
+  }
+
+  // Marka jalan (tile vertikal, putus-putus pas di-scroll)
+  private drawMarka(key: string) {
+    const w = 16;
+    const h = 64;
+    const ctx = this.ctx(key, w, h);
+    if (!ctx) return;
+    ctx.fillStyle = "rgba(251,247,236,0.85)";
+    rr(ctx, w / 2 - 3, 12, 6, 36, 3);
+    ctx.fill();
+    this.done(key);
   }
 
   // Lubang (belakang): gundukan + mulut gelap

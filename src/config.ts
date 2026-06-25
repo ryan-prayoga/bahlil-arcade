@@ -96,10 +96,24 @@ export const GEPUK = {
   wargaChance: 0.2,
 };
 
+// Game #3 — Antar MBG (3-lane dodge)
+export const ANTAR = {
+  lanes: 3,
+  startLives: 3,
+  baseSpeed: 300, // px/detik turun
+  maxSpeed: 720,
+  speedRampPerSec: 13,
+  truckY: GAME_HEIGHT - 150,
+  rowGapMin: 220, // jarak antar baris spawn (px)
+  rowGapMax: 360,
+  scoreBox: 15,
+  distancePerPoint: 16,
+};
+
 export const STORAGE_KEYS = {
   highScore: "bahlil_arcade_tangkap_high",
   highScoreLari: "bahlil_arcade_lari_high",
-  bagibagi: "bahlil_arcade_bagibagi_save",
+  highScoreAntar: "bahlil_arcade_antar_high",
   highScoreGepuk: "bahlil_arcade_gepuk_high",
   muted: "bahlil_arcade_muted",
 };

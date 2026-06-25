@@ -29,12 +29,12 @@ export const GAMES: GameEntry[] = [
     sceneKey: "BahlilLari",
   },
   {
-    id: "bagi-bagi-mbg",
-    title: "Bagi-bagi",
-    tagline: "Satu ketuk, anggaran melonjak.",
-    iconKey: "koin",
+    id: "antar-mbg",
+    title: "Antar MBG",
+    tagline: "Salip halangan, antar gizi.",
+    iconKey: "truk",
     status: "active",
-    sceneKey: "BagiBagi",
+    sceneKey: "AntarMBG",
   },
   {
     id: "gepuk-bahlil",

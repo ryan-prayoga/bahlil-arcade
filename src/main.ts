@@ -4,6 +4,7 @@ import BootScene from "./scenes/BootScene";
 import HubScene from "./scenes/HubScene";
 import TangkapMBGScene from "./scenes/TangkapMBGScene";
 import BahlilLariScene from "./scenes/BahlilLariScene";
+import BagiBagiScene from "./scenes/BagiBagiScene";
 import GameOverScene from "./scenes/GameOverScene";
 
 const config: Phaser.Types.Core.GameConfig = {
@@ -27,7 +28,14 @@ const config: Phaser.Types.Core.GameConfig = {
     antialias: true,
     roundPixels: false,
   },
-  scene: [BootScene, HubScene, TangkapMBGScene, BahlilLariScene, GameOverScene],
+  scene: [
+    BootScene,
+    HubScene,
+    TangkapMBGScene,
+    BahlilLariScene,
+    BagiBagiScene,
+    GameOverScene,
+  ],
 };
 
 const game = new Phaser.Game(config);

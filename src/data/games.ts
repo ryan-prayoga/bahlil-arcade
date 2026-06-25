@@ -33,7 +33,8 @@ export const GAMES: GameEntry[] = [
     title: "Bagi-bagi",
     tagline: "Satu ketuk, anggaran melonjak.",
     iconKey: "koin",
-    status: "soon",
+    status: "active",
+    sceneKey: "BagiBagi",
   },
   {
     id: "gepuk-bahlil",

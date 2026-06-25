@@ -83,6 +83,7 @@ export const LARI = {
 export const STORAGE_KEYS = {
   highScore: "bahlil_arcade_tangkap_high",
   highScoreLari: "bahlil_arcade_lari_high",
+  bagibagi: "bahlil_arcade_bagibagi_save",
   muted: "bahlil_arcade_muted",
 };
 
